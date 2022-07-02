@@ -1,6 +1,6 @@
 # TCP Socket (Client-server Model) using Winsock2
 
-CMake was used as the build system of this application. Kindly follow these steps:
+CMake was used as the build system generator of this application. Kindly follow these steps:
 ```
 mkdir build
 ```
