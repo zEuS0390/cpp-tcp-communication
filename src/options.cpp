@@ -9,7 +9,8 @@
 #include <windows.h>
 #include <string>
 
-int tcp::server(void) {
+int tcp::server(void)
+{
     int bufferlen = 512;
     char buffer[bufferlen];
 
@@ -26,7 +27,8 @@ int tcp::server(void) {
     struct addrinfo *result = NULL;
     WSADATA wsadata;
     int iresult = WSAStartup(MAKEWORD(2, 2), &wsadata);
-    if (iresult != 0) {
+    if (iresult != 0)
+    {
         std::cerr << "WSAStartup failed: " << iresult;
         return 1;
     }
@@ -39,7 +41,8 @@ int tcp::server(void) {
 
     // Resolve the server address and port
     iresult = getaddrinfo(NULL, port.c_str(), &hints, &result);
-    if (iresult != 0) {
+    if (iresult != 0)
+    {
         std::cerr << "getaddrinfo failed: " << iresult;
         WSACleanup();
         return 1;
@@ -47,7 +50,8 @@ int tcp::server(void) {
 
     // Create a socket
     SOCKET listensocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
-    if (listensocket == INVALID_SOCKET) {
+    if (listensocket == INVALID_SOCKET)
+    {
         std::cerr << "Error creating a socket: " << WSAGetLastError();
         freeaddrinfo(result);
         WSACleanup();
@@ -56,7 +60,8 @@ int tcp::server(void) {
 
     // Bind the socket
     iresult = bind(listensocket, result->ai_addr, (int)result->ai_addrlen);
-    if (iresult == SOCKET_ERROR) {
+    if (iresult == SOCKET_ERROR)
+    {
         std::cerr << "Error binding socket: " << WSAGetLastError();
         freeaddrinfo(result);
         closesocket(listensocket);
@@ -67,7 +72,8 @@ int tcp::server(void) {
     freeaddrinfo(result);
 
     // Listen on the socket for a client
-    if (listen(listensocket, SOMAXCONN) == SOCKET_ERROR) {
+    if (listen(listensocket, SOMAXCONN) == SOCKET_ERROR)
+    {
         std::cerr << "Error listening to a socket: " << WSAGetLastError();
         closesocket(listensocket);
         WSACleanup();
@@ -78,7 +84,8 @@ int tcp::server(void) {
     SOCKET ClientSocket = INVALID_SOCKET;
 
     ClientSocket = accept(listensocket, NULL, NULL);
-    if (ClientSocket == INVALID_SOCKET) {
+    if (ClientSocket == INVALID_SOCKET)
+    {
         std::cerr << "Error accepting a client socket: " << WSAGetLastError();
         closesocket(listensocket);
         WSACleanup();
@@ -95,11 +102,13 @@ int tcp::server(void) {
     // Receive and send data
     do {
         iresult = recv(ClientSocket, buffer, bufferlen, 0);
-        if (iresult > 0) {
+        if (iresult > 0)
+        {
             std::cout << "Received Message: " << buffer << std::endl;
             std::cout << "Bytes received: " << iresult << std::endl;
             isendresult = send(ClientSocket, bufferreply, (int)strlen(bufferreply)+1, 0);
-            if (isendresult == SOCKET_ERROR) {
+            if (isendresult == SOCKET_ERROR)
+            {
                 std::cerr << "Error sending a message to the client: " << WSAGetLastError();
                 closesocket(ClientSocket);
                 WSACleanup();
@@ -107,9 +116,13 @@ int tcp::server(void) {
             }
             std::cout << "Message sent: " << bufferreply << std::endl;
             std::cout << "Bytes sent: " << (int)strlen(bufferreply)+1 << std::endl;
-        } else if (iresult == 0) {
+        }
+        else if (iresult == 0)
+        {
             std::cout << "Connection closed..." << std::endl;
-        } else {
+        }
+        else
+        {
             std::cerr << "recv failed: " << WSAGetLastError();
             closesocket(ClientSocket);
             WSACleanup();
@@ -119,7 +132,8 @@ int tcp::server(void) {
 
     // Shutdown the connection for send since no more data will be sent
     iresult = shutdown(ClientSocket, SD_SEND);
-    if (iresult == SOCKET_ERROR) {
+    if (iresult == SOCKET_ERROR)
+    {
         std::cerr << "Shutdown failed: " << WSAGetLastError();
         closesocket(ClientSocket);
         WSACleanup();
@@ -135,7 +149,8 @@ int tcp::server(void) {
     return 0;
 }
 
-int tcp::client (void) {
+int tcp::client (void)
+{
     // Declare server information
     std::string server_address;
     std::string server_port;
@@ -161,7 +176,8 @@ int tcp::client (void) {
     WSADATA wsadata;
 
     iresult = WSAStartup(MAKEWORD(2,2), &wsadata);
-    if (iresult != 0) {
+    if (iresult != 0)
+    {
         std::cerr << "Error initializing winsock: " << iresult;
         return 1;
     }
@@ -173,7 +189,8 @@ int tcp::client (void) {
 
     // Resolve the address and port
     iresult = getaddrinfo(server_address.c_str(), server_port.c_str(), &hints, &result);
-    if (iresult != 0) {
+    if (iresult != 0)
+    {
         std::cerr << "Error resolving the address and port: " << iresult;
         WSACleanup();
         return 1;
@@ -183,7 +200,8 @@ int tcp::client (void) {
 
     // Create a socket
     SOCKET connectsocket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
-    if (connectsocket == INVALID_SOCKET) {
+    if (connectsocket == INVALID_SOCKET)
+    {
         std::cerr << "Error creating a socket: " << WSAGetLastError();
         freeaddrinfo(result);
         WSACleanup();
@@ -192,7 +210,8 @@ int tcp::client (void) {
 
     // Connect to the server
     iresult = connect(connectsocket, ptr->ai_addr, (int)ptr->ai_addrlen);
-    if (iresult == SOCKET_ERROR) {
+    if (iresult == SOCKET_ERROR)
+    {
         std::cerr << "Error establishing a connection: " << WSAGetLastError();
         closesocket(connectsocket);
         WSACleanup();
@@ -201,7 +220,8 @@ int tcp::client (void) {
 
     freeaddrinfo(result);
 
-    if (connectsocket == INVALID_SOCKET) {
+    if (connectsocket == INVALID_SOCKET)
+    {
         std::cerr << "Unable to connect to server!";
         closesocket(connectsocket);
         WSACleanup();
@@ -213,7 +233,8 @@ int tcp::client (void) {
 
     // Send and receive data
     iresult = send(connectsocket, sendbuffer.c_str(), sendbuffer.length()+1, 0);
-    if (iresult == SOCKET_ERROR) {
+    if (iresult == SOCKET_ERROR)
+    {
         std::cerr << "Send failed: " << WSAGetLastError();
         closesocket(connectsocket);
         WSACleanup();
@@ -223,7 +244,8 @@ int tcp::client (void) {
 
     // Shutdown the connection for sending since no more data will be sent
     iresult = shutdown(connectsocket, SD_SEND);
-    if (iresult == SOCKET_ERROR) {
+    if (iresult == SOCKET_ERROR)
+    {
         std::cerr << "Shutdown failed: " << WSAGetLastError();
         closesocket(connectsocket);
         WSACleanup();
@@ -231,17 +253,24 @@ int tcp::client (void) {
     }
 
     // Receive data until the server closes the connection
-    do {
+    do
+    {
         iresult = recv(connectsocket, buffer, bufferlen, 0);
-        if (iresult > 0) {
+        if (iresult > 0)
+        {
             std::cout << "Server reply: " << buffer << std::endl;
             std::cout << "Bytes received: " << iresult << std::endl;
-        } else if (iresult == 0) {
+        }
+        else if (iresult == 0)
+        {
             std::cout << "Connection closed..." << std::endl;
-        } else {
+        }
+        else
+        {
             std::cerr << "recv failed: " << WSAGetLastError();
         }
-    } while (iresult > 0);
+    }
+    while (iresult > 0);
 
     // Disconnect
     closesocket(connectsocket);
